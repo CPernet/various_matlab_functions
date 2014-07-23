@@ -243,9 +243,10 @@ else
 end
 
 % Axis settings
-set(gca, 'Xtick',[],'Ytick',[],'Color','w') % I wish I could color axes in white !!!
+set(gca, 'Xtick',[],'Ytick',[],'Color','w') 
 axis([-1 1 -1 1]);
 axis equal
+axis off
 
 
 
