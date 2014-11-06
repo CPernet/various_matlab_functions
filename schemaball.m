@@ -43,7 +43,7 @@ flag.Reorder = 'Yes'; % default is to reorder data avoiding 0 near diagonal
 flag.ExtraPlots = 'Yes'; % default is to also plot the sparsity before/after ordering and the correlation matrix 
 
 narginchk(2,12)
-for arg = 1:2:7
+for arg = 1:2:(nargin-2)
     if strcmp(varargin(arg),'Names')
         clear Names; 
         for n=1:size(varargin{arg+1},2)
@@ -247,11 +247,4 @@ set(gca, 'Xtick',[],'Ytick',[],'Color','w')
 axis([-1 1 -1 1]);
 axis equal
 axis off
-
-
-
-
-
-
-
 
