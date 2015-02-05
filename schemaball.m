@@ -104,12 +104,19 @@ if strcmp(flag.Connect,'Thickness')
     n = length(find(tril(Mask,-1)));
     T = exp(1):exp(2.5)/(n+2):exp(2.5);
 else
-    % I do that here because it pops 'figure' and I don't know how to avoid this
-    cold = cool; warm = hot; close % I do that here because it pops 'figure' and I don't know how to avoid this
-    cold = cold(1:32,:); n = length(find(tril(Mask.*(Data<0),-1)));
-    cold = cold(round(1:(32/n):32),:);
-    warm = warm(24:56,:); n = length(find(tril(Mask.*(Data>0),-1)));
-    warm = warm(round(1:(32/n):32),:); C = [cold ; flipud(warm)]; 
+%     I do that here because it pops 'figure' calling colormap 
+%     and I don't know how to avoid this
+    if sum(Data(:)<0) == 0
+        C = hsv; close; C=flipud(C(round(round(1:(40/65):40)),:));
+    elseif sum(Data(:)>0) == 0
+        C = hsv; close; C=C(round(1:round(1:(40/65):40):54),:);
+    else
+        cold = cool; warm = hot; close % I do that here because it pops 'figure' and I don't know how to avoid this
+        cold = cold(1:32,:); n = length(find(tril(Mask.*(Data<0),-1)));
+        cold = cold(round(1:(32/n):32),:);
+        warm = warm(24:56,:); n = length(find(tril(Mask.*(Data>0),-1)));
+        warm = warm(round(1:(32/n):32),:); C = [cold ; flipud(warm)];
+    end
 end
 
 %% prepare information
@@ -192,6 +199,7 @@ elseif strcmp(flag.Edges, 'Bezier');
     tmp = Mask2.*(Data2<0);
     [ind1,ind2]=ind2sub(size(Mask2),find(tmp(:))); % look for non-zeros
     N2 = length(ind1); % number of edges to plot
+    colortick1 = [0:N2];
     t = (0.025: 0.05 :1)';
     t2 = [1-t, t].^2;
     Bx = NaN(length(t2),N2);
@@ -203,13 +211,18 @@ elseif strcmp(flag.Edges, 'Bezier');
     
     % plot but check the correlation strengh in Data2 to choose color order   
     plotindex = 1;
+    if sum(Data2(:)>0) == 0
+        increment = length(C)/N2;
+    else
+        increment = 32/N2;
+    end
     for c = 1:N2
         if strcmp(flag.Connect,'Thickness')
             plot(Bx(:,c),By(:,c),'b','LineWidth',T(plotindex));
         else
-            plot(Bx(:,c),By(:,c),'Color',C(plotindex,:),'LineWidth',2);
+            plot(Bx(:,c),By(:,c),'Color',C(round(plotindex),:),'LineWidth',2);
         end
-        plotindex = plotindex+1;
+        plotindex = plotindex+increment;
     end
     clear tmp ind1 ind2 N2 Bx By 
 
@@ -218,6 +231,7 @@ elseif strcmp(flag.Edges, 'Bezier');
     tmp = Mask2.*(Data2>0);
     [ind1,ind2]=ind2sub(size(Mask2),find(tmp(:))); % look for non-zeros
     N2 = length(ind1); % number of edges to plot
+    colortick2 = [colortick1+1:N2];
     t = (0.025: 0.05 :1)';
     t2 = [1-t, t].^2;
     Bx = NaN(length(t2),N2);
@@ -228,13 +242,15 @@ elseif strcmp(flag.Edges, 'Bezier');
     end
     
     % plot but check the correlation strengh in Data2 to choose color order
+    dispo = length(C)-plotindex+1;
+    increment = dispo/N2;
     for c = 1:N2
         if strcmp(flag.Connect,'Thickness')
             plot(Bx(:,c),By(:,c),'b','LineWidth',T(plotindex));
         else
-            plot(Bx(:,c),By(:,c),'Color',C(plotindex,:),'LineWidth',2);
+            plot(Bx(:,c),By(:,c),'Color',C(round(plotindex),:),'LineWidth',2);
         end
-        plotindex = plotindex+1;
+        plotindex = plotindex+increment;
     end
     clear tmp ind1 ind2 N2 Bx By
     
@@ -247,4 +263,7 @@ set(gca, 'Xtick',[],'Ytick',[],'Color','w')
 axis([-1 1 -1 1]);
 axis equal
 axis off
-
+if strcmp(flag.Connect,'Colour')
+    v = sort(Data2(find(Data2.*Mask2)));
+    colorbar; caxis([min(v) max(v)]);
+end
