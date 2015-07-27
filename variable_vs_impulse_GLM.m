@@ -506,7 +506,7 @@ subplot(3,1,3);
 plot(Y3,'LineWidth',2); hold on; 
 plot(Y4,'r','LineWidth',2); 
 plot(Yhat(1:400),'--','LineWidth',2);
-plot(Yhat(401:end),'--r','LineWidth',2); grid on; axis tight
+plot(Yhat(401:end),'g','LineWidth',2); grid on; axis tight
 D = mean(Y3-Y4);
 Dhat = mean(Yhat(1:400)-Yhat(401:end));
 Difference_real_model = D-Dhat;
